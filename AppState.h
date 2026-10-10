@@ -10,11 +10,9 @@ struct AppState
 {
     std::string scramble;
     char scrambleBuffer[256] = "";
-    bool showScrambleCube = false;
     Cube scrambleCube;
-    bool showCrossCube = false;
+    int selected = 0;
     Cube crossCube;
-    bool showPairCube = false;
     Cube pairCube;
     bool solved = false;
     std::string solvedPair;

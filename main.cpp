@@ -4,6 +4,7 @@
 #include "imgui_impl_opengl3.h"
 #include "Cube.h"
 #include <GLFW/glfw3.h>
+#include <regex>
 #include <iostream>
 
 void drawSticker(ImDrawList* drawList, float x, float y, float size, char colour)
@@ -74,19 +75,21 @@ void drawCube(Cube& cube)
 
     drawFace(drawList, cube, 45, pos.x+100, pos.y+200);
 }
+bool validateScramble(const std::vector<std::string>& scramble){
+    std::regex movePattern("[URFDLB](2|')?");
+    for(const auto& move : scramble){
+        if(!regex_match(move, movePattern))
+            return false;
+    }
+    return true;
+}
 
 int main()
 {
     glfwInit();
-
-    GLFWwindow* window = glfwCreateWindow(
-            800,
-            600,
-            "Keibe Cube Trainer",
-            nullptr,
-            nullptr
-    );
-
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    GLFWwindow* window = glfwCreateWindow(850,600,"Keibe Cube Trainer",nullptr,nullptr);
+    
     glfwMakeContextCurrent(window);
 
     IMGUI_CHECKVERSION();
@@ -95,6 +98,27 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 130");
 
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.Colors[ImGuiCol_WindowBg] = ImVec4(0.10f, 0.10f, 0.12f, 1.0f);
+
+    bool validScramble = true;
+
+    ImGuiIO& io = ImGui::GetIO();
+
+    ImFontConfig config;
+    config.SizePixels = 45.0f;
+    ImFont* titleFont =
+            io.Fonts->AddFontDefault(&config);
+
+    ImFontConfig config2;
+    config2.SizePixels = 24.0f;
+    ImFont* headingFont =
+            io.Fonts->AddFontDefault(&config2);
+
+    ImFontConfig config3;
+    config3.SizePixels = 18.0f;
+    ImFont* defaultFont =
+            io.Fonts->AddFontDefault(&config3);
 
     AppState state;
 
@@ -107,72 +131,124 @@ int main()
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
+        ImGui::SetNextWindowPos(ImVec2(0, 0));
+        ImGui::SetNextWindowSize(ImGui::GetIO().DisplaySize);
 
         ImGui::Begin(
                 "Cube Trainer",
                 nullptr,
+                ImGuiWindowFlags_NoTitleBar |
                 ImGuiWindowFlags_NoResize |
                 ImGuiWindowFlags_NoMove
         );
+        ImGui::PushFont(defaultFont);
+        ImGui::PushFont(titleFont);
+        ImGui::Text("KEIBE");
+        ImGui::PopFont();
 
-        ImGui::Text("The cube goblin has awakened.\nAll cross solutions done on white cross with green front.\nStart cross solutions with a z2 rotation.");
-
-        ImGui::InputText("Scramble",state.scrambleBuffer,IM_ARRAYSIZE(state.scrambleBuffer));
-
+//        ImGui::Text("The cube goblin has awakened.\nAll cross solutions done on white cross with green front.\nStart cross solutions with a z2 rotation.\nWide moves not supported.");
+        ImGui::PushFont(headingFont);
+        ImGui::Dummy(ImVec2(0,5));
+        ImGui::Text("SCRAMBLE");
+        ImGui::Dummy(ImVec2(0,10));
+        ImGui::PopFont();
+        ImGui::InputText("##Enter scramble",state.scrambleBuffer,IM_ARRAYSIZE(state.scrambleBuffer));
+        ImGui::SameLine();
         if(ImGui::Button("Solve"))
         {
-            state.solving = true;
-            solve(state);
+            std::regex movePattern(R"([URFDLB](2|')?([URFDLB](2|')?|\s*)+)");
+            if(regex_match(state.scrambleBuffer, movePattern)){
+                validScramble = true;
+                state.solving = true;
+                solve(state);
+            }
+            else{
+                validScramble = false;
+            }
+            ImGui::Text("Invalid scramble");
+        }
+        if(!validScramble)
+        {
+            ImGui::Text("Invalid scramble");
         }
         if(state.solving)
         {
             ImGui::Text("Solving...");
         }
         if(state.solved){
+            ImGui::Dummy(ImVec2(0,20));
             ImGui::Text("Solved in %lld ms.", state.solveTime);
-            ImGui::Checkbox("Show scramble",&state.showScrambleCube);
-            if(state.showScrambleCube){
-                drawCube(state.scrambleCube);
-                ImGui::Dummy(ImVec2(400,300));
-            }
-
-            ImGui::Text("Cross solution: ");
-
-            if(state.crossSolution.empty()){
-                ImGui::SameLine();
-                ImGui::Text("Cross already solved!");
-            }
-            else{
-                for(const auto& move : state.crossSolution){
-                    ImGui::SameLine();
-                    ImGui::Text("%s", move.c_str());
-                }
-            }
+            ImGui::Dummy(ImVec2(0,5));
+            ImGui::RadioButton("Scramble", &state.selected, 0);
             ImGui::SameLine();
-            ImGui::Checkbox("Show cross",&state.showCrossCube);
-            if(state.showCrossCube){
-                drawCube(state.crossCube);
-                ImGui::Dummy(ImVec2(400,300));
-            }
-            if(state.pairSolution.empty()){
-                ImGui::Text("First pair already paired!");
-            }
-            else{
-                ImGui::Text("First pair solution");
-                ImGui::SameLine();
-                ImGui::Text("(%s):", state.solvedPair.c_str());
-                for(const auto& move : state.pairSolution){
-                    ImGui::SameLine();
-                    ImGui::Text("%s", move.c_str());
-                }
-                ImGui::SameLine();
-                ImGui::Checkbox("Show pair",&state.showPairCube);
-                if(state.showPairCube){
-                    drawCube(state.pairCube);
+            ImGui::RadioButton("Cross", &state.selected, 1);
+            ImGui::SameLine();
+            ImGui::RadioButton("First Pair", &state.selected, 2);
+            ImGui::Dummy(ImVec2(0,5));
+            if (ImGui::BeginTable("main", 2))
+            {
+                ImGui::TableNextColumn();
+                ImGui::BeginChild("Draw", ImVec2(0, 330), true);
+                ImGui::Dummy(ImVec2(0,10));
+                if(state.selected==0){
+                    drawCube(state.scrambleCube);
                     ImGui::Dummy(ImVec2(400,300));
                 }
+                if(state.selected==1){
+                    drawCube(state.crossCube);
+                    ImGui::Dummy(ImVec2(400,300));
+                }
+                if(!state.pairSolution.empty()){
+                    if(state.selected==2){
+                        drawCube(state.pairCube);
+                        ImGui::Dummy(ImVec2(400,300));
+                    }
+                }
+                ImGui::EndChild();
+                ImGui::TableNextColumn();
+                ImGui::BeginChild("Output", ImVec2(0, 330), true);
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.3f, 0.8f, 1.0f, 1.0f));
+                ImGui::PushFont(headingFont);
+                ImGui::Text("CROSS");
+                ImGui::NewLine();
+                if(state.crossSolution.empty()){
+                    ImGui::Text("already solved");
+                }
+                else{
+                    ImGui::NewLine();
+                    for(const auto& move : state.crossSolution){
+                        ImGui::SameLine();
+                        ImGui::Text("%s", move.c_str());
+                    }
+                }
+                ImGui::PopStyleColor();
+                ImGui::NewLine();
+                ImGui::NewLine();
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.9f, 0.8f, 1.0f, 1.0f));
+
+                ImGui::Text("FIRST PAIR");
+                if(state.pairSolution.empty()){
+                    ImGui::NewLine();
+                    ImGui::Text("already paired");
+                }
+                else{
+                    ImGui::SameLine();
+                    ImGui::Text("(%s)", state.solvedPair.c_str());
+                    ImGui::NewLine();
+                    ImGui::NewLine();
+                    for(const auto& move : state.pairSolution){
+                        ImGui::SameLine();
+                        ImGui::Text("%s", move.c_str());
+                    }
+                }
+                ImGui::PopStyleColor();
+                ImGui::PopFont();
+                ImGui::EndChild();
+                ImGui::EndTable();
             }
+
         }
+        ImGui::PopFont();
         ImGui::End();
 
 
@@ -197,3 +273,4 @@ int main()
 
     return 0;
 }
+//TODO: set window size or change the format so there isnt a gaping gap gap and also maybe input sanitisation

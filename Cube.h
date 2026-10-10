@@ -15,13 +15,12 @@
 #include <vector>
 
 class Cube {
+
 public:
     Cube();
 
-    Cube(std::array<char, 54> state);
 
-    void print() const;
-    int oneFace(const std::vector<std::string>& solution);
+    explicit Cube(std::array<char, 54> state);
 
     const std::array<char, 54> &getStickers() const;
 
@@ -29,23 +28,21 @@ public:
 
     std::vector<std::string> cross();
 
-    int countOrientedEdges();
+    void doMoveSequence(const std::vector<std::string> &moves);
+
+    std::vector<std::string> firstPair();
+
+private:
+
+    void print() const;
+
     int evaluateSolution(const std::vector<std::string>& solution);
 
     int heuristic();
 
-    std::vector<std::string> firstPair();
-
-    void doMoveSequence(const std::vector<std::string> &moves);
-
-private:
     std::array<char, 54> stickers;
     std::map<char,int> startPos = {{'U',0},{'L',9},{'F',18},{'R',27},{'B',36},{'D',45}};
-    std::unordered_set<char> validChar{'R','r','L','l','F','f','B','b','D','d','U','u','E','S','M','x','y','z'};
-    std::array<int,12> oneMove{21, 23, 30, 32, 39, 41, 12, 14, 48, 50, 46, 52};
-
-    std::array<int,4> goodFace{46,48,50,52};
-    std::array<int,8> annoyingYellows{25,34,43,16,46,48,50,52};
+    std::unordered_set<char> validChar{'R','L','F','B','D','U','E','S','M','x','y','z'};
 
     std::array<std::string,12> testMoves = {"U","U'","F","F'","R","R'","L","L'"};
 
@@ -81,9 +78,7 @@ private:
     std::array<std::string,4> f2l = {"WGR","WGO","WOB","WBR"};
 
     [[nodiscard]] bool isSolved() const;
-    std::string coloursAtCorner(const std::string &corner);
 
-    std::string findCorner(const std::string &cornerColours);
     std::string findEdge(const std::string &cornerColours) const;
 
     void turnFaceAntiClockwise(char layer);
@@ -97,23 +92,14 @@ private:
     void rotateFaceStickersClockwise(char layer);
     void rotateFaceStickersAntiClockwise(char layer);
     void doRotation(const std::string &move);
-    std::string coloursAtEdge(const std::string &edge);
-    bool sameCorner(std::string corner1, std::string corner2);
 
     bool sameEdge(std::string edge1, std::string edge2) const;
 
-    char findWhiteOfCorner(const std::string &cornerColours);
     bool isWhiteCrossSolved();
-    std::string findPair(const std::string &cornerColours);
 
     bool isPaired(const std::string &cornerColours);
 
-    bool isCornerSolved(const std::string &edge);
-
     bool isEdgeSolved(const std::string& edge);
-
-    bool isPairSolved(const std::string& corner);
-    int bestPairScore();
 
 
     bool goal(const std::string& pair);
@@ -122,25 +108,14 @@ private:
 
     int countUnsolvedCrossEdges();
 
-    int countF2LNotPaired();
-
     int pairHeuristic(const std:: string& pair);
-
-    int countAnnoyingYellows();
-
-    int countFMoves(const std::vector<std::string>& solution);
-
-    int countDoubleMoves(const std::vector<std::string> &solutionV);
 
     bool isJoint(const std::string &cornerColours);
 
     bool isSplitPaired(const std::string &pair);
 
-    std::vector<std::vector<std::string>> generateFastTriggers();
+    static std::vector<std::vector<std::string>> generateFastTriggers();
 
-    int evaluateTrigger(const std::vector<std::string> &trigger);
-
-    int evaluateCrossSolution(const std::vector<std::string> &trigger);
 };
 
 

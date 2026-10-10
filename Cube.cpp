@@ -32,6 +32,8 @@ const std::array<char, 54> &Cube::getStickers() const {
     return stickers;
 }
 
+
+
 std::string Cube::toString() {
     std::string state;
     for (char i: stickers) {
@@ -57,7 +59,8 @@ struct Node {
 
 std::vector<Node> generateNeighbours(const Node &curr) {
     std::vector<Node> reachable;
-    std::array<std::string, 18> testMoves = {"U", "U'", "F", "F'", "R", "R'", "L", "L'", "D", "D'", "R2", "U2", "D2",
+    std::array<std::string, 18> testMoves = {"U", "U'", "F", "F'", "R", "R'", "L", "L'",
+                                             "D", "D'", "R2", "U2", "D2",
                                              "L2", "F2","B","B'","B2"};
     for (const std::string& move: testMoves) {
         Node node;
@@ -172,16 +175,11 @@ std::vector<std::string> Cube::firstPair() {
             }
 
             if(curr.moves.size()>10&&bestPairScore<9){
-//                std::cout << "\nPair" << pair << "is over because size: " << curr.moves.size() << " best score: " << bestPairScore;
                 queue={};
                 continue;
             }
 
             if (curr.cube.goal(pair)) {
-//                std::cout << "\n"<<pair << " solution: ";
-//                for(const std::string& poop : curr.moves){
-//                    std::cout << poop << " ";
-//                }
                 int score = evaluateSolution(curr.moves);
                 if(score<bestPairScore){
                     bestSolution = curr.moves;
@@ -195,7 +193,6 @@ std::vector<std::string> Cube::firstPair() {
                     tries--;
                 }
                 if((score<5||tries<0||fails<0)){
-//                    std::cout <<"\n" <<pair << "\nIt's over because score:  "<< score << " tries: " << tries << " fails: " << fails << "\nbest score: " << bestPairScore;
                     queue={};
                 }
                  continue;
@@ -309,88 +306,8 @@ int Cube::pairHeuristic(const std::string& pair) {
     return score;
 }
 
-int Cube::countOrientedEdges() {
-    int count = 0;
-    for (const auto &[key, value]: edges) {
-        if (coloursAtEdge(key).find('Y') == std::string::npos) {
-            if (stickers[value[0]] == 'B' || stickers[value[0]] == 'G') {
-                count++;
-            }
-        }
-    }
-    return count;
-}
-
-int Cube::countAnnoyingYellows() {
-    int count = 4;
-    for (const auto edge: annoyingYellows) {
-        if (stickers[edge] == 'Y') {
-            count++;
-        }
-    }
-    return count;
-}
-
-int Cube::countFMoves(const std::vector<std::string>& solutionV) {
-    std::string solutionS;
-    for(const auto& move: solutionV)
-        solutionS+=move;
-    int count = 0;
-    for (const auto move: solutionS) {
-        if (move=='F')
-            count++;
-    }
-    return count;
-}
-int Cube::countDoubleMoves(const std::vector<std::string>& solutionV) {
-    std::string solutionS;
-    for(const auto& move: solutionV)
-        solutionS+=move;
-    int count = 0;
-    for (const auto move: solutionS) {
-        if (move=='2')
-            count++;
-    }
-    return count;
-}
 bool Cube::goal(const std::string& pair) {
     return isPaired(pair) && isWhiteCrossSolved();
-}
-
-int Cube::oneFace(const std::vector<std::string>& solution){
-    std::string solutionS;
-    for(std::string string: solution){
-        solutionS+=string;
-    }
-    bool right = false;
-    bool left = false;
-    for(char i : solutionS){
-        if(i=='R'){
-            right = true;
-        }
-        if(i=='L'){
-            left = true;
-        }
-    }
-    int count = 0;
-    if(right)
-        count++;
-    if(left)
-        count++;
-    return count<2;
-}
-
-int Cube::countF2LNotPaired() {
-    int count = 4;
-    if (isPaired("WGR"))
-        count--;
-    if (isPaired("WOB"))
-        count--;
-    if (isPaired("WBR"))
-        count--;
-    if (isPaired("WGO"))
-        count--;
-    return count;
 }
 
 bool Cube::isWhiteCrossSolved() {
@@ -569,55 +486,6 @@ void Cube::doMoveSequence(const std::vector<std::string> &moves) {
     }
 }
 
-std::string Cube::coloursAtCorner(const std::string &corner) {
-    std::string colours;
-    for (int i: corners[corner]) {
-        colours += stickers[i];
-    }
-    return colours;
-}
-
-std::string Cube::coloursAtEdge(const std::string &edge) {
-    std::string colours;
-    for (int i: edges[edge]) {
-        colours += stickers[i];
-    }
-    return colours;
-}
-
-std::string Cube::findPair(const std::string &cornerColours) {
-    std::string edge;
-    edge = edge + cornerColours[1] + cornerColours[2];
-    return "corner: " + cornerColours + "\ncorner position: " + findCorner(cornerColours) + "\nedge: " + edge +
-           "\nedge position: " +
-           findEdge(edge);
-}
-
-
-std::string Cube::findCorner(const std::string &cornerColours) {
-    for (const auto &[key, value]: corners) {
-        std::string colours;
-        for (const auto &pos: value) {
-            colours += stickers[pos];
-        }
-        if (sameCorner(colours, cornerColours)) {
-            return key;
-        }
-    }
-    return "corner no match";
-}
-
-char Cube::findWhiteOfCorner(const std::string &cornerPos) {
-    std::array<int, 3> positions = corners[cornerPos];
-    for (int i = 0; i < 3; i++) {
-        if (stickers[positions[i]] == 'W') {
-            return cornerPos[i];
-        }
-    }
-    std::cout << "This is where things went WRONG";
-    return 'Z';
-}
-
 
 std::string Cube::findEdge(const std::string &edge) const {
     for (const auto &[key, value]: edges) {
@@ -642,30 +510,6 @@ bool Cube::isEdgeSolved(const std::string &edge) {
         }
     }
     return flag;
-}
-
-bool Cube::isCornerSolved(const std::string &corner) {
-    bool flag = true;
-    std::string cornerPos = findCorner(corner);
-    std::array<int, 3> cornerIndexes = corners[cornerPos];
-    for (int i = 0; i < 3; i++) {
-        if (stickers[startPos[cornerPos[i]] + 4] != stickers[cornerIndexes[i]]) {
-            flag = false;
-        }
-    }
-    return flag;
-}
-
-bool Cube::isPairSolved(const std::string &corner) {
-    std::string edge;
-    edge = edge + corner[1] + corner[2];
-    return (isCornerSolved(corner) && isEdgeSolved(edge));
-}
-
-bool Cube::sameCorner(std::string corner1, std::string corner2) {
-    std::sort(corner1.begin(), corner1.end());
-    std::sort(corner2.begin(), corner2.end());
-    return corner1 == corner2;
 }
 
 bool Cube::sameEdge(std::string edge1, std::string edge2) const {
@@ -1354,77 +1198,6 @@ void Cube::turnFaceAntiClockwise(char layer) {
         std::cout << "WTF IS THAT MOVE LMFAO";
     }
 }
-
-
-void Cube::print() const {
-    auto p = [&](int i) { std::cout << stickers[i] << ' '; };
-
-
-    std::cout << "        ";
-    p(0);
-    p(1);
-    p(2);
-    std::cout << "\n";
-    std::cout << "        ";
-    p(3);
-    p(4);
-    p(5);
-    std::cout << "\n";
-    std::cout << "        ";
-    p(6);
-    p(7);
-    p(8);
-    std::cout << "\n\n";
-
-    for (int row = 0; row < 3; ++row) {
-        for (int i = 9 + row * 3; i < 12 + row * 3; ++i) p(i);
-        std::cout << " ";
-        for (int i = 18 + row * 3; i < 21 + row * 3; ++i) p(i);
-        std::cout << " ";
-        for (int i = 27 + row * 3; i < 30 + row * 3; ++i) p(i);
-        std::cout << " ";
-        for (int i = 36 + row * 3; i < 39 + row * 3; ++i) p(i);
-        std::cout << "\n";
-    }
-
-    std::cout << "\n";
-    std::cout << "        ";
-    p(45);
-    p(46);
-    p(47);
-    std::cout << "\n";
-    std::cout << "        ";
-    p(48);
-    p(49);
-    p(50);
-    std::cout << "\n";
-    std::cout << "        ";
-    p(51);
-    p(52);
-    p(53);
-    std::cout << "\n\n";
-
-
-}
-
-int Cube::evaluateCrossSolution(const std::vector<std::string>& trigger) {
-    int score = 0;
-    score += trigger.size()*10;
-    for(const auto& curr : trigger){
-        if(curr=="B"||curr=="B'"||curr=="B2"){
-            score+=10;
-        }
-        if(curr=="R2"||curr=="L2"||curr=="U2"||curr=="B2"||curr=="F2"){
-            score+=5;
-        }
-    }
-    for(int i = 0; i<trigger.size()-3&&trigger.size()>3; i++){
-        if((trigger[i]=="R"&&trigger[i+2]=="R'")||(trigger[i]=="R'"&&trigger[i+2]=="R")||(trigger[i]=="L"&&trigger[i+2]=="L'")||(trigger[i]=="L'"&&trigger[i+2]=="L"))
-            score-=30;
-    }
-    return score;
-}
-
 
 int Cube::evaluateSolution(const std::vector<std::string>& solution) {
     int score = 0;

@@ -27,7 +27,6 @@ void solve(AppState& state)
                     auto pair = cube.firstPair();
                     if(!pair.empty()){
                         state.solvedPair = pair.back();
-                        std::cout<<state.solvedPair;
                         pair.pop_back();
                     }
 
