@@ -1,7 +1,3 @@
-//
-// Created by Burge on 2026/08/13.
-//
-
 #include "Cube.h"
 #include <iostream>
 #include <algorithm>
@@ -103,10 +99,8 @@ std::vector<std::string> Cube::cross() {
         Node curr = queue.top();
         queue.pop();
 
-//        int score = evaluateCrossSolution(curr.moves);
 
-        if (curr.cube.isWhiteCrossSolved()) {//&score<=80;
-//            std::cout<<"score: "<<score<<" ";
+        if (curr.cube.isWhiteCrossSolved()) {
             return curr.moves;
         }
 
@@ -132,7 +126,6 @@ std::vector<std::string> Cube::firstPair() {
     }
     for(std::string &pair : f2l){
         if(goal(pair)){
-            std::cout << "\n"<<pair << " already paired!";
             return {};
         }
     }
@@ -212,7 +205,6 @@ std::vector<std::string> Cube::firstPair() {
 
         }
     }
-    std::cout << "\nPair solution: " << bestPair << " ";
     return bestSolution;
 
 }
@@ -286,7 +278,6 @@ int Cube::heuristic() {
 }
 
 int Cube::pairHeuristic(const std::string& pair) {
-    //TODO: improve ts
     //Counts white on the cross
     int score = 0;
     if (stickers[46] != 'W')
@@ -993,8 +984,6 @@ void Cube::turnFaceClockwise(char layer) {
         stickers[31] = buffCentre;
 
     } else {
-        std::cout << "WTF IS THAT MOVE LMFAO";
-        std::cout << layer;
 
     }
 
@@ -1195,7 +1184,6 @@ void Cube::turnFaceAntiClockwise(char layer) {
         stickers[13] = buffCentre;
 
     } else {
-        std::cout << "WTF IS THAT MOVE LMFAO";
     }
 }
 

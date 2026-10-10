@@ -5,7 +5,6 @@
 #include "Cube.h"
 #include <GLFW/glfw3.h>
 #include <regex>
-#include <iostream>
 
 void drawSticker(ImDrawList* drawList, float x, float y, float size, char colour)
 {
@@ -75,14 +74,6 @@ void drawCube(Cube& cube)
 
     drawFace(drawList, cube, 45, pos.x+100, pos.y+200);
 }
-bool validateScramble(const std::vector<std::string>& scramble){
-    std::regex movePattern("[URFDLB](2|')?");
-    for(const auto& move : scramble){
-        if(!regex_match(move, movePattern))
-            return false;
-    }
-    return true;
-}
 
 int main()
 {
@@ -146,7 +137,6 @@ int main()
         ImGui::Text("KEIBE");
         ImGui::PopFont();
 
-//        ImGui::Text("The cube goblin has awakened.\nAll cross solutions done on white cross with green front.\nStart cross solutions with a z2 rotation.\nWide moves not supported.");
         ImGui::PushFont(headingFont);
         ImGui::Dummy(ImVec2(0,5));
         ImGui::Text("SCRAMBLE");
@@ -273,4 +263,3 @@ int main()
 
     return 0;
 }
-//TODO: set window size or change the format so there isnt a gaping gap gap and also maybe input sanitisation

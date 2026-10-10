@@ -1,0 +1,22 @@
+# ninja log v5
+48	1765	8133660624282089	CMakeFiles/Keibe.dir/Solver.cpp.obj	4eea1363e81b83d5
+42	3559	8133660642172479	CMakeFiles/Keibe.dir/external/imgui/backends/imgui_impl_opengl3.cpp.obj	b3cbf1a27228a027
+35	4821	8133660654812423	CMakeFiles/Keibe.dir/external/imgui/backends/imgui_impl_glfw.cpp.obj	9849df59cca91b3a
+7	5058	8133660657198861	CMakeFiles/Keibe.dir/Cube.cpp.obj	99784d928b26b4f5
+12	5500	8133660661597309	CMakeFiles/Keibe.dir/external/imgui/imgui_tables.cpp.obj	dc4a374dc3f17d1f
+1	5975	8133660666364922	CMakeFiles/Keibe.dir/main.cpp.obj	af2c279deb9ca42c
+23	7652	8133660683099409	CMakeFiles/Keibe.dir/external/imgui/imgui_draw.cpp.obj	b639723b7291a1e4
+29	8798	8133660694602666	CMakeFiles/Keibe.dir/external/imgui/imgui_widgets.cpp.obj	edd6a0675004b6f3
+17	12503	8133660731622901	CMakeFiles/Keibe.dir/external/imgui/imgui.cpp.obj	b4af2edbdb82e0aa
+12503	12915	8133660733911455	Keibe.exe	6c5a8b6570cd58e8
+0	17	0	clean	b26e0f42c341beb7
+39	2125	8133670603076850	CMakeFiles/Keibe.dir/external/imgui/backends/imgui_impl_opengl3.cpp.obj	b3cbf1a27228a027
+62	2660	8133670608440558	CMakeFiles/Keibe.dir/Solver.cpp.obj	4eea1363e81b83d5
+53	2959	8133670611436879	CMakeFiles/Keibe.dir/external/imgui/backends/imgui_impl_glfw.cpp.obj	9849df59cca91b3a
+32	5756	8133670639424623	CMakeFiles/Keibe.dir/external/imgui/imgui_tables.cpp.obj	dc4a374dc3f17d1f
+9	6453	8133670646393432	CMakeFiles/Keibe.dir/Cube.cpp.obj	99784d928b26b4f5
+3	7384	8133670655704043	CMakeFiles/Keibe.dir/main.cpp.obj	af2c279deb9ca42c
+16	8058	8133670662386559	CMakeFiles/Keibe.dir/external/imgui/imgui_draw.cpp.obj	b639723b7291a1e4
+46	9434	8133670676215396	CMakeFiles/Keibe.dir/external/imgui/imgui_widgets.cpp.obj	edd6a0675004b6f3
+24	12607	8133670707938474	CMakeFiles/Keibe.dir/external/imgui/imgui.cpp.obj	b4af2edbdb82e0aa
+12608	12900	8133670709635211	Keibe.exe	6c5a8b6570cd58e8
